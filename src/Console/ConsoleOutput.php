@@ -59,7 +59,7 @@ class ConsoleOutput extends SymfonyConsoleOutput
         $progressBar = $this->progressBar($name);
 
         if ($progressBar->getMessage()) {
-            $this->sections['message']->overwrite($progressBar->getMessage());
+            $this->overwriteSection($this->sections['message'], $progressBar->getMessage());
         }
 
         $progressBar->addSteps($steps)->start();
@@ -77,7 +77,8 @@ class ConsoleOutput extends SymfonyConsoleOutput
             $cacheMessage = '';
         }
 
-        $this->sections['intro']->overwrite(
+        $this->overwriteSection(
+            $this->sections['intro'],
             '<fg=green>Building '
             . $env
             . ' site '
@@ -91,7 +92,7 @@ class ConsoleOutput extends SymfonyConsoleOutput
     public function writeWritingFiles()
     {
         $this->sections['progress']->clear();
-        $this->sections['message']->overwrite('<fg=yellow>Writing files to destination...</>');
+        $this->overwriteSection($this->sections['message'], '<fg=yellow>Writing files to destination...</>');
 
         return $this;
     }
@@ -108,7 +109,8 @@ class ConsoleOutput extends SymfonyConsoleOutput
             $cacheMessage = '';
         }
 
-        $this->sections['intro']->overwrite(
+        $this->overwriteSection(
+            $this->sections['intro'],
             '<fg=yellow>Build time: </><fg=white>' .
             $time .
             ' seconds</> ' .
@@ -120,8 +122,13 @@ class ConsoleOutput extends SymfonyConsoleOutput
 
     public function writeConclusion()
     {
-        $this->sections['message']->overwrite('<fg=green>Site built successfully!</>');
+        $this->overwriteSection($this->sections['message'], '<fg=green>Site built successfully!</>');
 
         return $this;
+    }
+
+    protected function overwriteSection($section, string $message): void
+    {
+        $section->overwrite($this->getFormatter()->format($message));
     }
 }
